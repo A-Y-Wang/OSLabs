@@ -1,0 +1,13 @@
+forknexecute.c
+forknexecute.h
+forknexecute.o
+Makefile
+output.txt
+parser.c
+parser.h
+parser.o
+shell
+shell.c
+shell.dSYM
+shell.o
+yash
