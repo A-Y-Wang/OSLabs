@@ -134,7 +134,7 @@ void fg_command() {
     job_list[index].display_status = "+"; //since brought to the foreground, it is the most recent job
     if (job_list[index].background == 1){
         int len = strlen(job_list[index].command);
-        job_list[index].command[len - 1] = '\0'; //remove the & from the command string
+        job_list[index].command[len - 2] = '\0'; //remove the & from the command string
         job_list[index].background = 0; //change to foreground job
     }
 
@@ -170,13 +170,21 @@ void bg_command(){
     }
 
     char temp_command[MAX_TOKENS];
+    snprintf(temp_command, sizeof(temp_command), "%s &", job_list[index].command);
+    free(job_list[index].command);
+
+    job_list[index].command = strdup(temp_command);
+    job_list[index].status = "Running";
+    job_list[index].background = 1; 
+    job_list[index].display_status = "+"; 
+    //set the started background job to + and set rest to -
+    for(int i = 0; i < MAX_JOBS; i++){
+        if(i != index && job_list[i].pid != 0){
+            job_list[i].display_status = "-";
+        }
+    }
     
-    // strncpy(temp_command, job->command, sizeof(temp_command) - 1);
-    // temp_command[sizeof(temp_command) - 1] = '\0';
-    // int len = strlen(temp_command);
-    // while (len > 0 && (isspace((unsigned char)temp_command[len - 1]) || temp_command[len - 1] == '&')) {
-    //     temp_command[--len] = '\0';
-    // }
-    // printf("%s\n", temp_command);
+    printf("[%d]%s  %s    %s\n", job_list[index].job_id, job_list[index].display_status, job_list[index].status, job_list[index].command);
+   
     return;
 }
