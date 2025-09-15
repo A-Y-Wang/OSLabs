@@ -31,5 +31,6 @@ void set_and_clear_done_jobs(Job* job_list);
 void print_jobs(Job* jobs);
 
 void fg_command();
+void bg_command();
 
 #endif // JOB_CONTROL_H

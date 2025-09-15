@@ -33,6 +33,17 @@ int find_max_index(Job* job_list){ //should also be the current job with +
     return max_index; 
 }
 
+int find_max_stopped_job(Job* job_list){
+    int max = 0;
+    int index = 0;
+    for(int i = 0; i < MAX_JOBS; i++){
+        if(job_list[i].job_id > max && strcmp(job_list[i].status, "Stopped") == 0){
+            max = job_list[i].job_id;
+        }
+    }
+    return index;
+}
+
 //must hit ctrl z before using fg
 
 void init_job_list(Job* jobs){
@@ -126,7 +137,6 @@ void fg_command() {
         job_list[index].command[len - 1] = '\0'; //remove the & from the command string
         job_list[index].background = 0; //change to foreground job
     }
-    job_list[index].background = 0; //guarentee forground job
 
     printf("%s\n", job_list[index].command); //print the updated command
 
@@ -142,10 +152,31 @@ void fg_command() {
     } else {
         job_list[index].pid = 0;
         job_list[index].job_id = 0; //foreground job finished, remove it from the list.
+        int index_to_change = find_max_index(job_list);
+        job_list[index_to_change].display_status = "+";
     }
     return;
 }
 
 void bg_command(){
+    int index = find_max_stopped_job(job_list);
+    if(job_list[index].pid == 0){
+        return;
+    }
+    //continue the stopped job in the background
+    if(kill(job_list[index].pid, SIGCONT) < 0){
+        perror("kill (SIGCONT) failed");
+        return;
+    }
+
+    char temp_command[MAX_TOKENS];
     
+    // strncpy(temp_command, job->command, sizeof(temp_command) - 1);
+    // temp_command[sizeof(temp_command) - 1] = '\0';
+    // int len = strlen(temp_command);
+    // while (len > 0 && (isspace((unsigned char)temp_command[len - 1]) || temp_command[len - 1] == '&')) {
+    //     temp_command[--len] = '\0';
+    // }
+    // printf("%s\n", temp_command);
+    return;
 }

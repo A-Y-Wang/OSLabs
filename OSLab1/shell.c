@@ -22,16 +22,24 @@ Job job_list[MAX_JOBS];
 //quit current foreground process ctrl-c
 void sigint_handler(int signum) {
     if (foreground_pid != 0) {
-       
         kill(foreground_pid, SIGINT);
     } 
+    else {
+        printf("\n");
+        rl_on_new_line();
+        rl_redisplay(); 
+    }
 }
 
 // stop the foreground process ctrl-z
 void sigtstp_handler(int signum) {
     if (foreground_pid != 0) {
-
         kill(foreground_pid, SIGTSTP);
+    }
+    else{
+        printf("\n");
+        rl_on_new_line();
+        rl_redisplay(); 
     }
 }
 
@@ -67,10 +75,9 @@ int main(void){
 
     signal(SIGTSTP, sigtstp_handler);
     signal(SIGINT, sigint_handler);
+
     signal(SIGTTIN, SIG_IGN);
     signal(SIGTTOU, SIG_IGN);
-
-    signal(SIGINT, sigint_handler);
 
     init_job_list(job_list);
 
@@ -80,7 +87,6 @@ int main(void){
         set_and_clear_done_jobs(job_list);
 
         if(!input){
-            printf("\n");
             break;
         }
         else if(strcmp(input, "fg") == 0){
@@ -112,6 +118,7 @@ int main(void){
             char *tok = strtok_r(input_copy, " ", &saveptr);
             while(tok) {
                 //tried to do fg, bg, and jobs incorrectly
+                //printf(tok);
                 if(strcmp(tok, "fg") == 0 || strcmp(tok, "bg") == 0 || strcmp(tok, "jobs") == 0){
                     fail = 1;
                     break;
