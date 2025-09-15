@@ -39,6 +39,7 @@ int find_max_stopped_job(Job* job_list){
     for(int i = 0; i < MAX_JOBS; i++){
         if(job_list[i].job_id > max && strcmp(job_list[i].status, "Stopped") == 0){
             max = job_list[i].job_id;
+            index = i;
         }
     }
     return index;
