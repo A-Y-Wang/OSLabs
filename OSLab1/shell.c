@@ -83,12 +83,18 @@ int main(void){
             printf("\n");
             break;
         }
-        if(strcmp(input, "jobs") == 0){
+        else if(strcmp(input, "fg") == 0){
+            fg_command();
+        }
+        else if(strcmp(input, "bg") == 0){
+            bg_command();
+        }
+        else if(strcmp(input, "jobs") == 0){
             print_jobs(job_list);
             free(input);
             continue;
         }
-        if(input){
+        else if(input){
 
             char *input_copy = strdup(input);
 
@@ -105,7 +111,12 @@ int main(void){
 
             char *tok = strtok_r(input_copy, " ", &saveptr);
             while(tok) {
-                if(strcmp(tok, ">") == 0 || strcmp(tok, "<") == 0 || strcmp(tok, "2>") == 0){
+                //tried to do fg, bg, and jobs incorrectly
+                if(strcmp(tok, "fg") == 0 || strcmp(tok, "bg") == 0 || strcmp(tok, "jobs") == 0){
+                    fail = 1;
+                    break;
+                }
+                else if(strcmp(tok, ">") == 0 || strcmp(tok, "<") == 0 || strcmp(tok, "2>") == 0){
                     args1[argv1++] = tok;
                     tok = strtok_r(NULL, " ", &saveptr);
                     args1[argv1++] = tok;
