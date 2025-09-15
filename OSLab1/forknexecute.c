@@ -6,10 +6,10 @@
 #include <string.h>
 
 #include "parser.h"
+#include "forknexecute.h"
+#include "job_control.h"
 
-#define MAX_TOKENS 128
-
-int forknexecute(char **args, int argv, int background, volatile pid_t *foreground_pid, int shell_terminal_fd){
+int forknexecute(char **args, int argv, char *command, int background, volatile pid_t *foreground_pid, int shell_terminal_fd){
 
     //clean the commands with max 1 pipe
     char *clean_args[MAX_TOKENS];
@@ -20,7 +20,8 @@ int forknexecute(char **args, int argv, int background, volatile pid_t *foregrou
         perror("fork failed");
         return 1;
 
-    } else if (pid == 0) {
+    } 
+    else if (pid == 0) {
         // make cases based on the command??
         setpgid(0, 0);
 
@@ -34,18 +35,30 @@ int forknexecute(char **args, int argv, int background, volatile pid_t *foregrou
             exit(EXIT_FAILURE);
         }
         
-    } else {
+    } 
+    else {
         // we are the parent and need to wait for the child to finish? (but only if not a job control command??)
         setpgid(pid, pid);
+        int status;
+
         if(!background){
             *foreground_pid = pid;
             tcsetpgrp(shell_terminal_fd, pid);
-            waitpid(pid, NULL, WUNTRACED);
+            waitpid(pid, &status, WUNTRACED);
+
+            //check fro ctrl-z
+            if(WIFSTOPPED(status)){
+                add_job(pid, 0, command, background); //0 for stopped
+            }
+
             tcsetpgrp(shell_terminal_fd, getpgrp());
             *foreground_pid = 0;
         }
         else{
-            printf("Started background process with PID %d\n", pid);
+
+           printf(command);
+           add_job(pid, 1, command, background); //a background job has started
+
         }
 
     }
