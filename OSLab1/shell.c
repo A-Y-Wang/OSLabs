@@ -20,28 +20,6 @@ Job job_list[MAX_JOBS];
 //also check for no fg, bg, jobs, with & or |??
 
 //quit current foreground process ctrl-c
-void sigint_handler(int signum) {
-    if (foreground_pid != 0) {
-        kill(foreground_pid, SIGINT);
-    } 
-    else {
-        printf("\n");
-        rl_on_new_line();
-        rl_redisplay(); 
-    }
-}
-
-// stop the foreground process ctrl-z
-void sigtstp_handler(int signum) {
-    if (foreground_pid != 0) {
-        kill(foreground_pid, SIGTSTP);
-    }
-    else{
-        printf("\n");
-        rl_on_new_line();
-        rl_redisplay(); 
-    }
-}
 
 int valid_command(char **command){
     char *path_env = getenv("PATH");
@@ -73,8 +51,8 @@ int main(void){
 
     shell_terminal_fd = STDIN_FILENO; //0
 
-    signal(SIGTSTP, sigtstp_handler);
-    signal(SIGINT, sigint_handler);
+    signal(SIGTSTP, SIG_IGN);
+    signal(SIGINT, SIG_IGN);
 
     signal(SIGTTIN, SIG_IGN);
     signal(SIGTTOU, SIG_IGN);
@@ -83,7 +61,8 @@ int main(void){
 
     while (1) {
         //read user input
-        input = readline("# "); //store this into the job table command
+        const char* prompt = "# ";
+        input = readline(prompt); //store this into the job table command
         set_and_clear_done_jobs(job_list);
 
         if(!input){
