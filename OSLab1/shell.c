@@ -77,12 +77,17 @@ int main(void){
     while (1) {
         //read user input
         input = readline("# "); //store this into the job table command
-
         set_and_clear_done_jobs(job_list);
 
         if(!input){
             printf("\n");
+            free(input);
             break;
+        }
+        if(strcmp(input, "jobs") == 0){
+            print_jobs(job_list);
+            free(input);
+            continue;
         }
         if(input){
 
@@ -167,7 +172,7 @@ int main(void){
                     int process_return = pipe_execute(args1, args2, argv1, argv2, background, &foreground_pid, shell_terminal_fd);
                 }
                 else {
-                    int process_return = forknexecute(args1, argv1, input_copy, background, &foreground_pid, shell_terminal_fd);
+                    int process_return = forknexecute(args1, argv1, input, background, &foreground_pid, shell_terminal_fd);
                 }
             }
            

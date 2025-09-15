@@ -58,10 +58,9 @@ void add_job(pid_t pid, int status, char* command, int background){
         else if(job_list[i].pid != 0){
             // update other job details
             job_list[i].display_status = "-";
-            return;
         }
     }
-        
+    return; //done with looping over the job list     
 }
 
 //only display background job when done
@@ -74,7 +73,7 @@ void set_and_clear_done_jobs(Job* job_list) {
         for (int i = 0; i < MAX_JOBS; i++) {
             if (job_list[i].pid == pid) {
 
-                printf("\n[%d]%s  Done    %s", job_list[i].job_id, job_list[i].display_status, job_list[i].command);
+                printf("\n[%d]%s  Done    %s\n", job_list[i].job_id, job_list[i].display_status, job_list[i].command);
                 
                 // Remove the job from our list by setting its PID back to 0.
                 job_list[i].pid = 0; 
