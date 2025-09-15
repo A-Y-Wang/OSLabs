@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include "job_control.h"
 
-#define MAX_JOBS 16
+#define MAX_JOBS 32
 #define MAX_TOKENS 2048
 
 

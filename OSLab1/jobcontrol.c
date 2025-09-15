@@ -8,9 +8,6 @@
 
 #include "job_control.h"
 
-#define MAX_TOKENS 2048
-#define MAX_JOBS 16
-
 int find_max_job_id(Job* job_list){
     int max = 0;
     for(int i = 0; i < MAX_JOBS; i++){
@@ -60,30 +57,31 @@ void init_job_list(Job* jobs){
 
 void add_job(pid_t pid, int status, char* command, int background){
     int added_job = 0;
+    int index = find_max_job_id(job_list);
+    int job_id = index + 1;
+
     for(int i = 0; i < MAX_JOBS; i++){
-        if(job_list[i].pid == 0 && added_job == 0){
-            job_list[i].pid = pid;
-            job_list[i].job_id = find_max_job_id(job_list) + 1;
-            job_list[i].background = background;
-        
-            job_list[i].command = strdup(command);
-
-            if(status == 1){
-                job_list[i].status = "Running";
-            }
-            else{
-                job_list[i].status = "Stopped";
-            }
-            job_list[i].display_status = "+"; //added job is the most current job
-
-            added_job = 1;
-
-        }
-        else if(job_list[i].pid != 0){
-            // update other job details
-            job_list[i].display_status = "-";
+        if(job_list[i].pid != 0){
+            job_list[i].display_status = "-"; //set all other jobs to - since a new job is being added
         }
     }
+  
+    job_list[index].pid = pid;
+    job_list[index].job_id = job_id;
+    job_list[index].background = background;
+
+    job_list[index].command = strdup(command);
+
+    if(status == 1){
+        job_list[index].status = "Running";
+    }
+    else{
+        job_list[index].status = "Stopped";
+    }
+    job_list[index].display_status = "+"; //added job is the most current job
+
+    added_job = 1;
+    
     return; //done with looping over the job list     
 }
 
