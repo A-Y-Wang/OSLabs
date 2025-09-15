@@ -81,7 +81,6 @@ int main(void){
 
         if(!input){
             printf("\n");
-            free(input);
             break;
         }
         if(strcmp(input, "jobs") == 0){
@@ -180,6 +179,6 @@ int main(void){
             free(input_copy);
         }
     }
-
+    //clean up the job list memory maybe
     return 0;
 }

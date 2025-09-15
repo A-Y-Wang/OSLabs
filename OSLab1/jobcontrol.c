@@ -11,8 +11,6 @@
 #define MAX_TOKENS 2048
 #define MAX_JOBS 16
 
-Job job_list[MAX_JOBS];
-
 int find_max_job_id(Job* job_list){
     int max = 0;
     for(int i = 0; i < MAX_JOBS; i++){
