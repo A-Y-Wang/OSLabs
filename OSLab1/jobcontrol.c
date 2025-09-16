@@ -49,17 +49,19 @@ void init_job_list(Job* jobs){
         job_list[i].pid = 0;
         job_list[i].job_id = 0;
         job_list[i].background = 0;
-        int status = -1;
+        job_list[i].status = NULL; //Running or Stopped
         job_list[i].display_status = NULL;
         job_list[i].command = NULL;
     }
 }
 
 void add_job(pid_t pid, int status, char* command, int background){
-    int added_job = 0;
-    int index = find_max_job_id(job_list);
-    int job_id = index + 1;
+    int job_id = find_max_job_id(job_list) + 1;
+    int index = job_id - 1; //index in the array is job_id - 1
 
+    if(job_list[index].pid != 0){
+        return;
+    }
     for(int i = 0; i < MAX_JOBS; i++){
         if(job_list[i].pid != 0){
             job_list[i].display_status = "-"; //set all other jobs to - since a new job is being added
@@ -79,8 +81,6 @@ void add_job(pid_t pid, int status, char* command, int background){
         job_list[index].status = "Stopped";
     }
     job_list[index].display_status = "+"; //added job is the most current job
-
-    added_job = 1;
     
     return; //done with looping over the job list     
 }
