@@ -85,7 +85,7 @@ void add_job(pid_t pid, int status, char* command, int background){
     return; //done with looping over the job list     
 }
 
-//only display background job when done
+// only display background job when done
 void set_and_clear_done_jobs(Job* job_list) {
     int status;
     pid_t pid;
@@ -108,6 +108,7 @@ void set_and_clear_done_jobs(Job* job_list) {
         job_list[index].display_status = "+"; //set the most recent job
     }
 }
+
 
 void print_jobs(Job* job_list) {
     for (int i = 0; i < MAX_JOBS; i++) {
