@@ -131,8 +131,6 @@ void fg_command() {
 
      if (kill(job_list[index].pid, SIGCONT) < 0) {
         perror("kill (SIGCONT) failed");
-        tcsetpgrp(shell_terminal_fd, getpgrp());
-        foreground_pid = 0;
         return;
     }
 
