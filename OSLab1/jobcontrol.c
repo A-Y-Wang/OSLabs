@@ -91,8 +91,7 @@ void set_and_clear_done_jobs(Job* job_list) {
     pid_t pid;
     int index = 0;
 
-    while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-        //if enter it means our os has reported jobs have finished
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0) { //gets pid of background jobs that have terminated
         for (int i = 0; i < MAX_JOBS; i++) {
             if (job_list[i].pid == pid) {
 
@@ -139,21 +138,23 @@ void fg_command() {
 
     printf("%s\n", job_list[index].command); //print the updated command
 
-    tcsetpgrp(shell_terminal_fd, job_list[index].pid); //give the terminal to the job
-    foreground_pid = job_list[index].pid; //set the foreground pid to this job's pid
     int status;
+    foreground_pid = job_list[index].pid; //set the foreground pid to this job's pid
+    tcsetpgrp(shell_terminal_fd, job_list[index].pid); //give the terminal to the job
     waitpid(job_list[index].pid, &status, WUNTRACED);
-    tcsetpgrp(shell_terminal_fd, getpgrp());
-    foreground_pid = 0;
 
     if (WIFSTOPPED(status)) {
         job_list[index].status = "Stopped"; 
-    } else {
+    } 
+    else {
         job_list[index].pid = 0;
         job_list[index].job_id = 0; //foreground job finished, remove it from the list.
         int index_to_change = find_max_index(job_list);
         job_list[index_to_change].display_status = "+";
     }
+
+    tcsetpgrp(shell_terminal_fd, getpgrp());
+    foreground_pid = 0;
     return;
 }
 
