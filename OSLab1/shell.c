@@ -50,6 +50,8 @@ int main(void){
     int pipe = 0;
 
     shell_terminal_fd = STDIN_FILENO; //0
+    // tcsetpgrp(shell_terminal_fd, getpgrp());
+    // printf("Shell pgrp: %d, tcgetpgrp: %d\n", getpgrp(), tcgetpgrp(shell_terminal_fd));
 
     signal(SIGTSTP, SIG_IGN);
     signal(SIGINT, SIG_IGN);

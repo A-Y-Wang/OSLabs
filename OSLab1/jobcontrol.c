@@ -110,6 +110,7 @@ void set_and_clear_done_jobs(Job* job_list) {
 }
 
 
+
 void print_jobs(Job* job_list) {
     for (int i = 0; i < MAX_JOBS; i++) {
         if (job_list[i].pid != 0) {
@@ -120,12 +121,18 @@ void print_jobs(Job* job_list) {
 
 void fg_command() {
     int index = find_max_index(job_list); //finds the index of the most recent job
+    int status;
     if(job_list[index].pid == 0){
         return; //no jobs in the list yet
     }
-    //continue this pid job
-    if (kill(job_list[index].pid, SIGCONT) < 0) {
+
+    foreground_pid = job_list[index].pid; //set the foreground pid to this job's pid
+    tcsetpgrp(shell_terminal_fd, job_list[index].pid); 
+
+     if (kill(job_list[index].pid, SIGCONT) < 0) {
         perror("kill (SIGCONT) failed");
+        tcsetpgrp(shell_terminal_fd, getpgrp());
+        foreground_pid = 0;
         return;
     }
 
@@ -139,9 +146,7 @@ void fg_command() {
 
     printf("%s\n", job_list[index].command); //print the updated command
 
-    int status;
-    foreground_pid = job_list[index].pid; //set the foreground pid to this job's pid
-    tcsetpgrp(shell_terminal_fd, job_list[index].pid); //give the terminal to the job
+ 
     waitpid(job_list[index].pid, &status, WUNTRACED);
 
     if (WIFSTOPPED(status)) {

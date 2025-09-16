@@ -55,7 +55,6 @@ int forknexecute(char **args, int argv, char *command, int background, volatile 
             *foreground_pid = 0;
         }
         else{
-
            add_job(pid, 1, command, background); //a background job has started
 
         }
