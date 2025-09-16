@@ -21,6 +21,18 @@ Job job_list[MAX_JOBS];
 
 //quit current foreground process ctrl-c
 
+void sigtstp_handler(int signo) {
+    if (foreground_pid > 0) {
+        kill(foreground_pid, SIGTSTP);
+    }
+}
+
+void sigint_handler(int signo) {
+    if (foreground_pid > 0) {
+        kill(foreground_pid, SIGINT);
+    }
+}
+
 int valid_command(char **command){
     char *path_env = getenv("PATH");
         if (path_env == NULL) {
@@ -51,8 +63,8 @@ int main(void){
 
     shell_terminal_fd = STDIN_FILENO; //0
 
-    signal(SIGTSTP, SIG_IGN);
-    signal(SIGINT, SIG_IGN);
+    signal(SIGTSTP, sigtstp_handler);
+    signal(SIGINT, sigint_handler);
 
     signal(SIGTTIN, SIG_IGN);
     signal(SIGTTOU, SIG_IGN);
